@@ -8,6 +8,10 @@ import (
 )
 
 func main() {
+	StartServer()
+}
+
+func StartServer() {
 	// entry point to whole app
 	fmt.Println("Here we goooo")
 

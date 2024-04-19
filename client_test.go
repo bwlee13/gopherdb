@@ -9,6 +9,7 @@ import (
 )
 
 func TestMain(t *testing.T) {
+	go StartServer()
 	conn, err := net.Dial("tcp", "localhost:42069")
 	if err != nil {
 		fmt.Println("Failed to connect to server:", err)

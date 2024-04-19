@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/bwlee13/gopherdb/gopherdb"  // Adjust the path according to your module setup
 	"os"
+
+	"github.com/bwlee13/gopherdb/gopherdb" // Adjust the path according to your module setup
 )
 
-func main() {
+func _main() {
 	// Initialize the cache connection
 	cache, err := gopherdb.NewCache("localhost:42069")
 	if err != nil {
