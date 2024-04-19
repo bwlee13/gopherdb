@@ -1,47 +1,41 @@
 package main
 
 import (
-	"encoding/binary"
-	"fmt"
-	"net"
-	"os"
 	"testing"
+	"github.com/bwlee13/gopherdb/gopherdb"
+	"fmt"
+	"os"
 )
 
-func TestMain(t *testing.T) {
+// TestCacheSetAndGet tests the functionality of the Set and Get methods of the Cache
+func TestCacheSetAndGet(t *testing.T) {
 	go StartServer()
-	conn, err := net.Dial("tcp", "localhost:42069")
+	cache, err := gopherdb.NewCache("localhost:42069")
 	if err != nil {
-		fmt.Println("Failed to connect to server:", err)
-		os.Exit(1)
+		t.Fatalf("Failed to connect to cache server: %v", err)
 	}
-	defer conn.Close()
+	//defer cache.Close()
 
-	sendString(conn, "hello world")
-}
+	// Test data
+	testKey := "hello"
+	testValue := "world"
 
-func sendString(conn net.Conn, s string) {
-	// Convert the string to bytes
-	data := []byte(s)
+	// Set a value in the cache
+	if err := cache.Set(testKey, testValue); err != nil {
+		t.Errorf("Failed to set value: %v", err)
+	}
 
-	// Send the length of the data as a uint32
-	err := binary.Write(conn, binary.BigEndian, uint32(len(data)))
+	// Retrieve a value from the cache
+	value, err := cache.Get(testKey)
 	if err != nil {
-		fmt.Println("Error writing length:", err)
-		return
+		t.Errorf("Failed to get value: %v", err)
 	}
 
-	_, err = conn.Write(data)
-	if err != nil {
-		fmt.Println("Error writing data:", err)
-		return
-	}
+	fmt.Println("Value: ", value)
+	os.Exit(1)
 
-	ack := make([]byte, 4)
-	if _, err = conn.Read(ack); err != nil {
-		fmt.Println("Error reading acknowledgment:", err)
-		return
-	}
-
-	fmt.Println("Acknowledgment received:", string(ack))
+	// Check if the retrieved value matches the set value
+// 	if value != testValue {
+// 		t.Errorf("Expected value '%s', got '%s'", testValue, value)
+// 	}
 }
