@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"gopherdb"
 	"net"
 )
 
 func main() {
 	// entry point to whole app
 	fmt.Println("Here we goooo")
+	gopherdb.HandleConn()
 	// testing
 
 	serve, err := net.Listen("tcp", ":42069")
