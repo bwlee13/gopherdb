@@ -1,10 +1,10 @@
 package main
 
 import (
-	"testing"
-	"github.com/bwlee13/gopherdb/gopherdb"
 	"fmt"
-	"os"
+	"testing"
+
+	"github.com/bwlee13/gopherdb/gopherdb"
 )
 
 // TestCacheSetAndGet tests the functionality of the Set and Get methods of the Cache
@@ -14,7 +14,7 @@ func TestCacheSetAndGet(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to connect to cache server: %v", err)
 	}
-	//defer cache.Close()
+	defer cache.Close()
 
 	// Test data
 	testKey := "hello"
@@ -32,10 +32,11 @@ func TestCacheSetAndGet(t *testing.T) {
 	}
 
 	fmt.Println("Value: ", value)
-	os.Exit(1)
+	// cache.Close()
+	// t.Cleanup(func() { os.Exit(0) })
 
 	// Check if the retrieved value matches the set value
-// 	if value != testValue {
-// 		t.Errorf("Expected value '%s', got '%s'", testValue, value)
-// 	}
+	if value != testValue {
+		t.Errorf("Expected value '%s', got '%s'", testValue, value)
+	}
 }

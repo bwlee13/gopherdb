@@ -16,6 +16,7 @@ func StartServer() {
 	fmt.Println("Here we goooo")
 
 	serve, _ := net.Listen("tcp", ":42069")
+	defer serve.Close()
 
 	for {
 		conn, err := serve.Accept()
