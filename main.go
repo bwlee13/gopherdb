@@ -30,7 +30,6 @@ func handleConn(conn net.Conn) {
 	fmt.Println("Hanldeing conn...")
 	fmt.Println(conn)
 	scanner := bufio.NewScanner(conn)
-	fmt.Println("what about now")
 	for scanner.Scan() {
 		input := scanner.Text()
 		fmt.Println("Input: ", input)
