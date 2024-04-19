@@ -1,54 +1,64 @@
 package gopherdb
 
 import (
-    "fmt"
-    "net"
+	"encoding/binary"
+	"fmt"
+	"net"
 )
 
-// Correct the struct definition
 type Cache struct {
-    conn net.Conn
+	conn net.Conn
 }
 
-// Correct NewCache to accept serverAddress and return an error
+// NewCache creates and returns a new Cache instance connected to the specified server address.
 func NewCache(serverAddress string) (*Cache, error) {
-    conn, err := net.Dial("tcp", serverAddress)
-    if err != nil {
-        return nil, err
-    }
-    return &Cache{conn: conn}, nil
+	conn, err := net.Dial("tcp", serverAddress)
+	if err != nil {
+		return nil, err
+	}
+	return &Cache{conn: conn}, nil
 }
 
-// Add parameters and correct the return type for Set
+// Set sends a key-value pair to the cache server.
 func (c *Cache) Set(key string, value string) error {
-    _, err := c.conn.Write([]byte(fmt.Sprintf("SET %s %s\n", key, value)))
-    return err
+	// Prepare the command
+	command := fmt.Sprintf("SET %s %s", key, value)
+	data := []byte(command)
+	// Send the length of the data as a uint32
+	if err := binary.Write(c.conn, binary.BigEndian, uint32(len(data))); err != nil {
+		return err
+	}
+	// Send the command data
+	_, err := c.conn.Write(data)
+	return err
 }
 
-// Add parameters and correct the return type for Get
+// Get retrieves the value for a given key from the cache server.
 func (c *Cache) Get(key string) (string, error) {
-    _, err := c.conn.Write([]byte(fmt.Sprintf("GET %s\n", key)))
-    if err != nil {
-        return "", err
-    }
+	command := fmt.Sprintf("GET %s", key)
+	data := []byte(command)
+	// Send the length of the data as a uint32
+	if err := binary.Write(c.conn, binary.BigEndian, uint32(len(data))); err != nil {
+		return "", err
+	}
+	// Send the command data
+	if _, err := c.conn.Write(data); err != nil {
+		return "", err
+	}
 
-    // Read response
-    buffer := make([]byte, 1024)
-    n, err := c.conn.Read(buffer)
-    if err != nil {
-        return "", err
-    }
-
-    return string(buffer[:n]), nil
+	// Read the response (assuming the response will also be prefixed with its length)
+	var length uint32
+	if err := binary.Read(c.conn, binary.BigEndian, &length); err != nil {
+		return "", err
+	}
+	response := make([]byte, length)
+	if _, err := c.conn.Read(response); err != nil {
+		return "", err
+	}
+	return string(response), nil
 }
 
-// Check for errors on close
+// Close terminates the connection to the cache server.
 func (c *Cache) Close() error {
-    return c.conn.Close()
-}
-
-// Define or import GetTimestamp if it's used
-func HandleConn() {
-    fmt.Println("Handling conn...")
-    // GetTimestamp()  // This function needs to be defined or imported
+	return c.conn.Close()
 }
