@@ -3,18 +3,12 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"gopherdb"
 	"net"
 )
 
 func main() {
 	// entry point to whole app
 	fmt.Println("Here we goooo")
-<<<<<<< Updated upstream
-	gopherdb.HandleConn()
-	// testing
-=======
->>>>>>> Stashed changes
 
 	serve, err := net.Listen("tcp", ":42069")
 	if err != nil {
