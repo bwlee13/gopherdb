@@ -8,6 +8,7 @@ import (
 func main() {
 	// entry point to whole app
 	fmt.Println("Here we goooo")
+	// testing
 
 	serve, err := net.Listen("tcp", ":42069")
 	if err != nil {
