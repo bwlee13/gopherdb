@@ -1,6 +1,8 @@
 package gopherdb
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func GetTimestamp() {
 	fmt.Println("Getting timestamp")
