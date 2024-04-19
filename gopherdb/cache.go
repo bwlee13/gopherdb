@@ -4,4 +4,5 @@ import "fmt"
 
 func HandleConn() {
 	fmt.Println("Hanldeing conn...")
+	GetTimestamp()
 }
