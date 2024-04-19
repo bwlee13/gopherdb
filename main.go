@@ -16,13 +16,12 @@ func main() {
 		panic("PANIC ON CONN ")
 	}
 
+	conn, err := serve.Accept()
+	if err != nil {
+		fmt.Println("Conn Err TCP: ", err)
+		panic("PANIC ON CONN ")
+	}
 	for {
-		conn, err := serve.Accept()
-
-		if err != nil {
-			fmt.Println("Conn Err TCP: ", err)
-			panic("PANIC ON CONN ")
-		}
 		handleConn(conn)
 	}
 }
@@ -35,7 +34,7 @@ func handleConn(conn net.Conn) {
 	for scanner.Scan() {
 		input := scanner.Text()
 		fmt.Println("Input: ", input)
-		output := fmt.Sprintf("Received: %s", input)
+		output := fmt.Sprintf("Received: %s\n", input)
 		conn.Write([]byte(output))
 	}
 
