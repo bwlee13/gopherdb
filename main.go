@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
+	"io"
 	"net"
 )
 
@@ -30,22 +31,30 @@ func handleConn(conn net.Conn) {
 	for {
 		var length uint32
 		if err := binary.Read(conn, binary.BigEndian, &length); err != nil {
-			fmt.Println("Error reading length: ", err)
-			return
-		}
-		fmt.Println("Length? ", length)
-
-		payload := make([]byte, 250)
-		fmt.Println("Payload? ", payload)
-		if _, err := conn.Read(payload); err != nil {
-			fmt.Println("Error reading payload: ", err)
-			return
+			if err != io.EOF {
+				fmt.Println("Error reading length:", err)
+			}
+			break
 		}
 
-		fmt.Println("Received payload: ", payload)
+		fmt.Println("Length:", length)
+
+		if length > 1024*1024 {
+			fmt.Println("Payload length too large:", length)
+			return
+		}
+		payload := make([]byte, length)
+
+		_, err := io.ReadFull(conn, payload)
+		if err != nil {
+			fmt.Println("Error reading payload:", err)
+			return
+		}
+
+		fmt.Println("Received payload:", payload)
 
 		if _, err := conn.Write([]byte("Ack\n")); err != nil {
-			fmt.Println("Error writing to connection: ", err)
+			fmt.Println("Error writing to connection:", err)
 			return
 		}
 	}
