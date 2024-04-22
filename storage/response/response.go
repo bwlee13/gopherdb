@@ -1,6 +1,6 @@
 package response
 
-import "github.com/bwlee13/gopherdb/store/object"
+import "github.com/bwlee13/gopherdb/storage/object"
 
 const (
 	INVALID_COMMAND_ERR = "INVALID_COMMAND_ERR"

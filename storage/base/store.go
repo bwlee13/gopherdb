@@ -3,8 +3,8 @@ package base
 import (
 	"fmt"
 
-	"github.com/bwlee13/gopherdb/store/request"
-	"github.com/bwlee13/gopherdb/store/response"
+	"github.com/bwlee13/gopherdb/storage/request"
+	"github.com/bwlee13/gopherdb/storage/response"
 )
 
 const (
