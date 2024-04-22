@@ -1,10 +1,37 @@
-package server
+package main
+
+import (
+	"flag"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/bwlee13/gopherdb/storage/base"
+)
 
 // use below for CLI future work
 // "github.com/spf13/cobra"
 
-func main() {
+var (
+	listen = flag.String("listen", ":42069", "address to listen to")
+)
 
+var store *base.Store
+
+func main() {
+	flag.Parse()
+
+	store = base.NewStore()
+	service := NewService(*listen, store)
+	go service.Start()
+	log.Println("Starting server...")
+
+	t := make(chan os.Signal, 1)
+	signal.Notify(t, os.Interrupt, syscall.SIGTERM)
+	<-t
+
+	log.Println("Shutting down server...")
 }
 
 /*
