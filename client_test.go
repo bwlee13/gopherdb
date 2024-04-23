@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/bwlee13/gopherdb/gopherdb"
+	gopherdb "github.com/bwlee13/gopherdb/notgopherdb"
 )
 
 // TestCacheSetAndGet tests the functionality of the Set and Get methods of the Cache
