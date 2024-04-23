@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -14,7 +15,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "gopherdb [command] (flags)",
 	Short: "GopherDB command-line interface and server",
-	// TODO(cdo): Add a pointer to the docs in Long.
+	// TODO: Add a pointer to the docs in Long.
 	Long: `GopherDB command-line interface and server.
 	gopherdb is a CLI library for GopherDB that allows easy interface with GopherDB actions.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -38,8 +39,24 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.AddCommand(versionCmd)
-	rootCmd.AddCommand(timezoneCmd)
+	rootCmd.AddCommand(
+		versionCmd,
+		timezoneCmd,
+		// startCmd,
+		// initCmd,
+	)
+
+	cobra.EnableCommandSorting = false
+
+	// Set an error function for flag parsing which prints the usage message.
+	rootCmd.SetFlagErrorFunc(
+		func(c *cobra.Command, err error) error {
+			if err := c.Usage(); err != nil {
+				return err
+			}
+			fmt.Fprintln(c.OutOrStderr()) // just provides line break between usage and err
+			return err
+		})
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
@@ -49,4 +66,12 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+// use this in other cmd/***.go commands to print errors to the terminal
+func UsageAndErr(cmd *cobra.Command, args []string) error {
+	if err := cmd.Usage(); err != nil {
+		return err
+	}
+	return fmt.Errorf("unknown sub-command: %q", strings.Join(args, " "))
 }
