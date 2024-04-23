@@ -12,23 +12,24 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "gopherdb",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-	examples and usage of using your application. For example:
-
-	Cobra is a CLI library for Go that empowers applications.
-	This application is a tool to generate the needed files
-	to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
+	Use:   "gopherdb [command] (flags)",
+	Short: "GopherDB command-line interface and server",
+	// TODO(cdo): Add a pointer to the docs in Long.
+	Long: `GopherDB command-line interface and server.
+	gopherdb is a CLI library for GopherDB that allows easy interface with GopherDB actions.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Inside root run func")
+		fmt.Println("Inside GopherDB root run func")
 	},
+	SilenceUsage: true,
+
+	// consider adding this in early stages.
+	// however, each func should handle errors appropriately instead
+	// SilenceErrors: true,
+	Version: "GopherDB Version 1.0.0",
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
+// This is called by main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
