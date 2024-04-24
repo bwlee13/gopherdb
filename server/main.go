@@ -22,7 +22,8 @@ var store *base.Store
 func main() {
 	flag.Parse()
 
-	store = base.NewStore()
+	// default LRU because thats all i have right now
+	store = base.NewStore("LRU")
 	service := NewService(*listen, store)
 	go service.Start()
 	log.Println("Starting server...")

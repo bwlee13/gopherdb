@@ -15,3 +15,40 @@ type CacheResponse struct {
 	// Error message to be returned to client
 	Error string
 }
+
+func NewResponseFromValue(value interface{}) CacheResponse {
+	return CacheResponse{
+		CacheObj: object.NewCacheObjFromValue(value),
+		Status:   1,
+		Message:  "OK",
+		Error:    "",
+	}
+
+}
+
+func NewCacheMissResponse() CacheResponse {
+	return CacheResponse{
+		CacheObj: object.NewEmptyCacheObj(),
+		Status:   0,
+		Message:  "CACHE_MISS",
+		Error:    "",
+	}
+}
+
+func NewPingResponse() CacheResponse {
+	return CacheResponse{
+		CacheObj: object.NewEmptyCacheObj(),
+		Status:   1,
+		Message:  "PONG!",
+		Error:    "",
+	}
+}
+
+func NewResponseFromMessage(msg string, status int32) CacheResponse {
+	return CacheResponse{
+		CacheObj: object.NewEmptyCacheObj(),
+		Status:   status,
+		Message:  msg,
+		Error:    "",
+	}
+}

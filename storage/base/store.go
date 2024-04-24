@@ -3,8 +3,21 @@ package base
 import (
 	"fmt"
 
+	"github.com/bwlee13/gopherdb/storage/cache"
+	"github.com/bwlee13/gopherdb/storage/lru"
 	"github.com/bwlee13/gopherdb/storage/request"
 	"github.com/bwlee13/gopherdb/storage/response"
+)
+
+const (
+	STORE_GET         = "get"
+	STORE_PING        = "ping"
+	STORE_PUT         = "put"
+	STORE_ADD         = "add"
+	STORE_DELETE      = "delete"
+	STORE_FLUSH       = "flush"
+	STORE_NODE_SIZE   = "nodeSize"
+	STORE_APP_METRICS = "getAppMetrics"
 )
 
 const (
@@ -19,22 +32,52 @@ type CommandFunc func(args request.CacheRequest) response.CacheResponse
 
 type Store struct {
 	Config   interface{}
-	commands map[string]CommandFunc
+	policy   string
+	Cache    cache.Cache
+	commands map[string]interface{}
 }
 
 // TODO: NewStore to read from config & take Cache Algorithm
-func NewStore() *Store {
+func NewStore(policy string) *Store {
 	store := &Store{
-		commands: make(map[string]CommandFunc),
+		policy:   policy,
+		commands: make(map[string]interface{}),
 	}
-	store.commands["get"] = store.handleGet
-	store.commands["ping"] = store.handlePing
+	// store.commands["get"] = store.handleGet
+	// store.commands["ping"] = store.handlePing
 	return store
 }
 
+func (store *Store) BuildStore() {
+	store.Cache = store.newCacheFromPolicy(store.policy)
+	store.commands = store.registerHandlers()
+}
+
+func (store *Store) newCacheFromPolicy(policy string) cache.Cache {
+	switch policy {
+	case LRU_TYPE:
+		return lru.NewLRU()
+	default:
+		return nil
+	}
+}
+
+func (baseStore *Store) registerHandlers() map[string]interface{} {
+	return map[string]interface{}{
+		STORE_GET:  baseStore.Cache.Get,
+		STORE_PUT:  baseStore.Cache.Put,
+		STORE_PING: baseStore.Cache.Ping,
+	}
+
+}
+
 func (store *Store) Execute(cmd string, args request.CacheRequest) response.CacheResponse {
-	if command, found := store.commands[cmd]; found {
-		return command(args)
+	if _, found := store.commands[cmd]; found {
+		// Convert the interface{} type to the specific function type using a variable.
+		// some weird Go shit I haven't seen before. Kinda cool tho
+		// get func from map, assert into func type, call with args
+		res := store.commands[cmd].(func(request.CacheRequest) response.CacheResponse)(args)
+		return res
 	}
 	return response.CacheResponse{Error: fmt.Sprintf("Unknown command: %s", cmd)}
 }
