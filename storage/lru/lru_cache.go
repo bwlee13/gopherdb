@@ -61,6 +61,6 @@ func (cache *LRUCache) CountKeys(args request.CacheRequest) response.CacheRespon
 	return response.NewResponseFromMessage("METHODNOTAVAIL", 0)
 }
 
-func (cache *LRUCache) Ping() response.CacheResponse {
+func (cache *LRUCache) Ping(args request.CacheRequest) response.CacheResponse {
 	return response.NewPingResponse()
 }

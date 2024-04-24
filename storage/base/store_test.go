@@ -10,7 +10,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestStore(t *testing.T) {
+func TestStorePing(t *testing.T) {
+
+	store := NewStore("LRU")
+	store.BuildStore()
+	// defer store.Close()
+	if store == nil {
+		t.Fatalf("Failed to create store instance")
+	}
+
+	expectedRes := response.CacheResponse{
+		CacheObj: object.CacheObject{
+			Key:   "",
+			Value: interface{}(nil),
+			TTL:   -1,
+		},
+		Status:  1,
+		Message: "PONG!",
+		Error:   "",
+	}
+
+	result := store.Execute("ping", request.NewEmptyCacheRequest())
+	assert.Equal(t, expectedRes, result)
+}
+func TestCacheMiss(t *testing.T) {
 
 	store := NewStore("LRU")
 	store.BuildStore()
@@ -31,7 +54,6 @@ func TestStore(t *testing.T) {
 	}
 
 	result := store.Execute("get", request.NewCacheRequest("Key1", "Val1", -1))
-	fmt.Printf("Here is what res looks like: \n %v \n", result)
 	assert.Equal(t, expectedRes, result)
 }
 
@@ -54,11 +76,8 @@ func TestPutGet(t *testing.T) {
 		Error:   "",
 	}
 
-	resultPut := store.Execute("put", request.NewCacheRequest("Key1", "Val1", -1))
+	store.Execute("put", request.NewCacheRequest("Key1", "Val1", -1))
 	resultGet := store.Execute("get", request.NewCacheRequest("Key1", "", -1))
-
-	fmt.Printf("Here is what res PUT looks like: \n %v \n", resultPut)
-	fmt.Printf("Here is what res GET looks like: \n %v \n", resultGet)
 
 	assert.Equal(t, expectedResGet, resultGet)
 }

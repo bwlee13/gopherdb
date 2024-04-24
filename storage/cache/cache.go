@@ -12,5 +12,5 @@ type Cache interface {
 	Delete(reqObj request.CacheRequest) response.CacheResponse
 	Flush(args request.CacheRequest) response.CacheResponse
 	CountKeys(args request.CacheRequest) response.CacheResponse
-	Ping() response.CacheResponse
+	Ping(args request.CacheRequest) response.CacheResponse
 }
