@@ -2,15 +2,9 @@ package cmd
 
 import (
 	"github.com/bwlee13/gopherdb/server"
-	"github.com/bwlee13/gopherdb/storage/base"
-	"github.com/bwlee13/gopherdb/storage/response"
 
 	"github.com/spf13/cobra"
 )
-
-var store *base.Store
-var res response.CacheResponse
-var service *server.Service
 
 var startCmd = &cobra.Command{
 	Use:   "start",

@@ -42,7 +42,7 @@ func init() {
 	rootCmd.AddCommand(
 		versionCmd,
 		timezoneCmd,
-		// startCmd,
+		startCmd,
 		// initCmd,
 	)
 
