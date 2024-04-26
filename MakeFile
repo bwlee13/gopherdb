@@ -1,0 +1,21 @@
+.PHONY: build-cli install-cli build-server install-server clean
+
+BINARY_NAME_CLI=gopherdb
+BINARY_NAME_SERVER=gopherdb-server
+DEST_DIR_CLI=/usr/local/bin
+DEST_DIR_SERVER=/usr/local/bin
+
+build-cli:
+	cd cli && go build -o ${BINARY_NAME_CLI}
+
+install-cli:
+	cd cli && sudo mv ${BINARY_NAME_CLI} ${DEST_DIR_CLI}
+
+build-server:
+	go build -o ${BINARY_NAME_SERVER}
+
+install-server:
+	mv ${BINARY_NAME_SERVER} ${DEST_DIR_SERVER}
+
+clean:
+	sudo rm -f ${DEST_DIR_CLI}/${BINARY_NAME_CLI}
