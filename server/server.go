@@ -1,12 +1,21 @@
-package main
+package server
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/bwlee13/gopherdb/storage/base"
 	"github.com/pkg/errors"
+)
+
+var (
+	listen = flag.String("listen", ":42069", "address to listen to")
+	store  *base.Store
 )
 
 type Service struct {
@@ -23,6 +32,14 @@ func NewService(addr string, store *base.Store) *Service {
 
 func (service *Service) Start() {
 	StartServer(service)
+}
+
+func waitForShutdown() {
+	t := make(chan os.Signal, 1)
+	signal.Notify(t, os.Interrupt, syscall.SIGTERM)
+	<-t
+
+	log.Println("Shutting down server...")
 }
 
 func StartServer(service *Service) (err error) {
@@ -82,5 +99,18 @@ func handleConn(conn net.Conn) {
 			return
 		}
 	}
+
+}
+
+func InitServer() {
+	flag.Parse()
+
+	// default LRU because thats all i have right now
+	store = base.NewStore("LRU")
+	service := NewService(*listen, store)
+
+	go service.Start()
+	log.Println("Starting server...")
+	waitForShutdown()
 
 }
