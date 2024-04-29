@@ -1,3 +1,5 @@
+<a name="readme-top"></a>
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
@@ -19,6 +21,8 @@ Coming Soon - **LFU** (Least Frequently Used), **MRU** (Most Recently Used), **A
 
 Persistent storage will include SQL, NoSQL, TimeSeries, and Vector databases, making it a comprehensive solution for managing diverse data needs in one unified platform.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## Getting Started
 
 Welcome to the GopherDB project repository! This document provides essential information for developers working on or contributing to the GopherDB application.
@@ -26,6 +30,8 @@ Welcome to the GopherDB project repository! This document provides essential inf
 ### Makefile
 
 The make file currently only supports MacOS / Unix systems. This is used to build and install the gopherdb CLI globally on your system.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Entry Points
 
@@ -60,6 +66,28 @@ New commands should be their own go files under `cli/cmd` and the command var sh
         )
         ...
     }
+
+### Running Commands
+
+Try running the gopherdb cli to start the server.
+
+From root, open your terminal and run the following:
+
+```plaintext
+cmd cli && go run main.go help
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+#### CLI
+
+The entry point for the GopherDB CLI is located in the `root.go` file within the `cli/cmd` directory. This file is the root commands and configurations and is where all incoming requests will pass.
+
+```plaintext
+/cli/cmd/root.go
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
