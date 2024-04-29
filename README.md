@@ -5,8 +5,10 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-![X (formerly Twitter) Follow][twitter-url]
+
+**Reach out to me directly**
+
+[![X Follow][twitter-shield]][twitter-url]
 
 # GopherDB
 
@@ -109,7 +111,7 @@ I am constantly looking for feature ideas or feedback. If you want to share your
 
 **Brandon Lee**
 
-![X (formerly Twitter) Follow][twitter-url]
+[![X Follow][twitter-shield]][twitter-url]
 
 Contributions are **greatly appreciated**.
 
@@ -139,4 +141,5 @@ Don't forget to give the project a star! Thanks again!
 [license-url]: https://github.com/bwlee13/gopherdb/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/brandon-lee-68944885/
-[twitter-url]: https://img.shields.io/twitter/follow/brandonwlee13
+[twitter-shield]: https://img.shields.io/twitter/follow/brandonwlee13
+[twitter-url]: https://twitter.com/intent/follow?screen_name=brandonwlee13
