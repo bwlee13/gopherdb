@@ -53,7 +53,7 @@ The entry point for the GopherDB CLI is located in the `root.go` file within the
 /cli/cmd/root.go
 ```
 
-New commands should be their own go files under `cli/cmd` and the command var should be added to `root.go`'s init() func.
+New CLI commands should be their own go files under `cli/cmd` and the command var should be added to `root.go`'s init() func.
 
 `root.go`:
 
