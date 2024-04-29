@@ -67,6 +67,8 @@ New commands should be their own go files under `cli/cmd` and the command var sh
         ...
     }
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ### Running Commands
 
 Try running the gopherdb cli to start the server.
@@ -76,8 +78,6 @@ From root, open your terminal and run the following:
 ```plaintext
 cmd cli && go run main.go help
 ```
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 #### CLI
 
