@@ -6,6 +6,7 @@
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
+![X (formerly Twitter) Follow][twitter-url]
 
 # GopherDB
 
@@ -79,6 +80,50 @@ From root, open your terminal and run the following:
 cmd cli && go run main.go help
 ```
 
+<!-- ROADMAP -->
+
+## Roadmap
+
+_Loosely in order_
+
+- [x] Add back to top links
+- [ ] Add Changelog
+- [ ] Add cache eviction policies
+  - [ ] LFU
+  - [ ] MRU
+  - [ ] ARC
+  - [ ] TLRU
+- [ ] Build SDK
+- [ ] Add NO-SQL DB
+- [ ] Add SQL DB
+- [ ] Add Timeseries SQL DB
+- [ ] Add Vector DB
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- CONTRIBUTING -->
+
+## Contributing
+
+I am constantly looking for feature ideas or feedback. If you want to share your thoughts but don't want to build it yourself and raise a PR, simply reach out to me directly on twitter / X.
+
+**Brandon Lee**
+
+![X (formerly Twitter) Follow][twitter-url]
+
+Contributions are **greatly appreciated**.
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+Don't forget to give the project a star! Thanks again!
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -am 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
@@ -94,3 +139,4 @@ cmd cli && go run main.go help
 [license-url]: https://github.com/bwlee13/gopherdb/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/brandon-lee-68944885/
+[twitter-url]: https://img.shields.io/twitter/follow/brandonwlee13
