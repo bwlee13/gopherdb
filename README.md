@@ -79,16 +79,6 @@ From root, open your terminal and run the following:
 cmd cli && go run main.go help
 ```
 
-#### CLI
-
-The entry point for the GopherDB CLI is located in the `root.go` file within the `cli/cmd` directory. This file is the root commands and configurations and is where all incoming requests will pass.
-
-```plaintext
-/cli/cmd/root.go
-```
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
