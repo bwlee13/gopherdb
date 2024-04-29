@@ -1,12 +1,12 @@
 package server
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"net"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/bwlee13/gopherdb/storage/base"
@@ -14,8 +14,7 @@ import (
 )
 
 var (
-	listen = flag.String("listen", ":42069", "address to listen to")
-	store  *base.Store
+	store *base.Store
 )
 
 type Service struct {
@@ -30,23 +29,17 @@ func NewService(addr string, store *base.Store) *Service {
 	}
 }
 
-func (service *Service) Start() {
-	StartServer(service)
-}
-
-func waitForShutdown() {
-	t := make(chan os.Signal, 1)
-	signal.Notify(t, os.Interrupt, syscall.SIGTERM)
-	<-t
-
-	log.Println("Shutting down server...")
+func (service *Service) Start() error {
+	if err := StartServer(service); err != nil {
+		return err
+	}
+	return nil
 }
 
 func StartServer(service *Service) (err error) {
 	serve, err := net.Listen("tcp", service.addr)
 	if err != nil {
-		fmt.Printf("Failed to bind to port: %s", service.addr)
-		return errors.Wrap(err, "listen")
+		return errors.Wrap(err, "tcp listen err")
 	}
 
 	defer serve.Close()
@@ -54,8 +47,8 @@ func StartServer(service *Service) (err error) {
 	for {
 		conn, err := serve.Accept()
 		if err != nil {
-			fmt.Println("Conn Err TCP: ", err)
-			panic("PANIC ON CONN")
+			log.Println("Conn Err TCP: ", err)
+			continue
 		}
 
 		go handleConn(conn)
@@ -77,8 +70,8 @@ func handleConn(conn net.Conn) {
 		buf := make([]byte, 1024)
 		n, err := conn.Read(buf)
 		if err != nil {
-			fmt.Printf("Read ERR: %s \n", err)
-			panic("Read Err")
+			log.Printf("Read ERR: %s \n", err)
+			return
 		}
 
 		fmt.Println("Length:", len(buf[:n]))
@@ -102,15 +95,35 @@ func handleConn(conn net.Conn) {
 
 }
 
-func InitServer() {
-	flag.Parse()
+func waitForShutdown(shutdownChan chan struct{}) {
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+	select {
+	case <-sigChan:
+		log.Println("User is shutting down server...")
+	case <-shutdownChan:
+		log.Println("Internal error, shutting down server...")
+	}
+}
 
-	// default LRU because thats all i have right now
-	store = base.NewStore("LRU")
-	service := NewService(*listen, store)
+func InitServer(port string, policy string) {
+	log.Println("Port is set to: ", port)
+	log.Println("Policy is set to: ", policy)
 
-	go service.Start()
+	if !strings.HasPrefix(port, ":") {
+		port = ":" + port
+	}
+	store = base.NewStore(policy)
+	service := NewService(port, store)
+	shutdownChan := make(chan struct{})
+
 	log.Println("Starting server...")
-	waitForShutdown()
+	go func() {
+		if err := service.Start(); err != nil {
+			log.Println("Error: ", err)
+			shutdownChan <- struct{}{}
+		}
+	}()
 
+	waitForShutdown(shutdownChan)
 }
