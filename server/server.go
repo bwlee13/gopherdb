@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -20,12 +21,14 @@ var (
 type Service struct {
 	addr  string
 	store *base.Store
+	quit  chan bool
 }
 
 func NewService(addr string, store *base.Store) *Service {
 	return &Service{
 		addr:  addr,
 		store: store,
+		quit:  make(chan bool),
 	}
 }
 
@@ -43,43 +46,58 @@ func StartServer(service *Service) (err error) {
 	}
 
 	defer serve.Close()
+	go func() error {
+		for {
+			conn, err := serve.Accept()
+			if err != nil {
+				select {
+				case <-service.quit:
+					log.Println("Server requested to shut down...")
+					return fmt.Errorf("shutdown req")
+				default:
+					log.Println("Connection accept error: ", err)
+					return fmt.Errorf("shutdown req")
+				}
+			}
 
-	for {
-		conn, err := serve.Accept()
-		if err != nil {
-			log.Println("Conn Err TCP: ", err)
-			continue
+			go handleConn(conn, service)
 		}
+	}()
 
-		go handleConn(conn)
-	}
+	<-service.quit
+
+	return fmt.Errorf("Quitting")
 }
 
-func handleConn(conn net.Conn) {
+func handleConn(conn net.Conn, service *Service) error {
 	defer conn.Close()
 
 	for {
-		// var length uint32
-		// if err := binary.Read(conn, binary.BigEndian, &length); err != nil {
-		// 	if err != io.EOF {
-		// 		fmt.Println("Error reading length:", err)
-		// 	}
-		// 	break
-		// }
-
 		buf := make([]byte, 1024)
 		n, err := conn.Read(buf)
 		if err != nil {
-			log.Printf("Read ERR: %s \n", err)
-			return
+			if err == io.EOF {
+				fmt.Println("Client has closed connection")
+				return fmt.Errorf("client closed conn")
+			} else {
+				log.Printf("Read ERR: %s \n", err)
+				return fmt.Errorf("read Err: %s", err)
+			}
 		}
 
 		fmt.Println("Length:", len(buf[:n]))
-
 		log.Printf("command:\n %s", buf[:n])
 		fmt.Println(len(buf[:n]))
 		payload := buf[:n]
 		fmt.Println("Received payload:", payload)
+		message := string(payload)
+		fmt.Println("Received message:", message)
+
+		if strings.TrimSpace(message) == "shutdown" {
+			fmt.Println("Shutdown command received, closing connection.")
+			service.quit <- true
+			return fmt.Errorf("shutdown")
+		}
 
 		// msg, _ := Parse(string(buf[:n]))
 		// if msg == nil {
@@ -89,7 +107,7 @@ func handleConn(conn net.Conn) {
 
 		if _, err := conn.Write([]byte("Ack\n")); err != nil {
 			fmt.Println("Error writing to connection:", err)
-			return
+			return fmt.Errorf("error writing to connection: %s", err)
 		}
 	}
 
@@ -126,4 +144,21 @@ func InitServer(port string, policy string) {
 	}()
 
 	waitForShutdown(shutdownChan)
+}
+
+func StopServer(port string) error {
+	if !strings.HasPrefix(port, ":") {
+		port = ":" + port
+	}
+	conn, err := net.Dial("tcp", port)
+	if err != nil {
+		return errors.Wrap(err, "Stop Conn Fail")
+	}
+	defer conn.Close()
+
+	_, err = conn.Write([]byte("shutdown"))
+	if err != nil {
+		return errors.Wrap(err, "Shutdown Fail")
+	}
+	return nil
 }

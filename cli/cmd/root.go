@@ -43,6 +43,7 @@ func init() {
 		versionCmd,
 		timezoneCmd,
 		startCmd,
+		stopCmd,
 		// initCmd,
 	)
 
