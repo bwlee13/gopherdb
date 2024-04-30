@@ -44,6 +44,7 @@ func init() {
 		timezoneCmd,
 		startCmd,
 		stopCmd,
+		pingCmd,
 		// initCmd,
 	)
 

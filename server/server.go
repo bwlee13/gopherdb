@@ -11,6 +11,8 @@ import (
 	"syscall"
 
 	"github.com/bwlee13/gopherdb/storage/base"
+	"github.com/bwlee13/gopherdb/storage/request"
+	"github.com/bwlee13/gopherdb/storage/response"
 	"github.com/pkg/errors"
 )
 
@@ -92,22 +94,21 @@ func handleConn(conn net.Conn, service *Service) error {
 		fmt.Println("Received payload:", payload)
 		message := string(payload)
 		fmt.Println("Received message:", message)
+		// obv find a way better way than this. Maybe use handler and pass trimmed message
+		// also do switch case, not if elif...
+		if strings.TrimSpace(message) == "ping" {
+			fmt.Println("PING REC")
+			res := HandleCommands("ping")
+			fmt.Println("RESULT: ", res)
 
-		if strings.TrimSpace(message) == "shutdown" {
+			if _, err := conn.Write([]byte(res.Message)); err != nil {
+				fmt.Println("Error writing to connection:", err)
+				return fmt.Errorf("error writing to connection: %s", err)
+			}
+		} else if strings.TrimSpace(message) == "shutdown" {
 			fmt.Println("Shutdown command received, closing connection.")
 			service.quit <- true
 			return fmt.Errorf("shutdown")
-		}
-
-		// msg, _ := Parse(string(buf[:n]))
-		// if msg == nil {
-		// 	fmt.Println("Error when parsing message")
-		// 	return errors.Wrap(err, "parse command")
-		// }
-
-		if _, err := conn.Write([]byte("Ack\n")); err != nil {
-			fmt.Println("Error writing to connection:", err)
-			return fmt.Errorf("error writing to connection: %s", err)
 		}
 	}
 
@@ -132,6 +133,7 @@ func InitServer(port string, policy string) {
 		port = ":" + port
 	}
 	store = base.NewStore(policy)
+	store.BuildStore()
 	service := NewService(port, store)
 	shutdownChan := make(chan struct{})
 
@@ -144,6 +146,13 @@ func InitServer(port string, policy string) {
 	}()
 
 	waitForShutdown(shutdownChan)
+}
+
+func HandleCommands(command string) response.CacheResponse {
+	if command == "ping" {
+		return store.Execute("ping", request.NewEmptyCacheRequest())
+	}
+	return response.NewPingResponse()
 }
 
 func StopServer(port string) error {

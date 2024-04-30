@@ -72,6 +72,10 @@ func (baseStore *Store) registerHandlers() map[string]interface{} {
 }
 
 func (store *Store) Execute(cmd string, args request.CacheRequest) response.CacheResponse {
+	fmt.Println("cmd rec: ", cmd)
+	fmt.Println("what is policy", store.policy)
+	fmt.Println("store cache ", store.Cache)
+	fmt.Println("store commands ", store.commands)
 	if _, found := store.commands[cmd]; found {
 		// Convert the interface{} type to the specific function type using a variable.
 		// some weird Go shit I haven't seen before. Kinda cool tho
@@ -79,6 +83,9 @@ func (store *Store) Execute(cmd string, args request.CacheRequest) response.Cach
 		res := store.commands[cmd].(func(request.CacheRequest) response.CacheResponse)(args)
 		return res
 	}
+	fmt.Println("why not found...")
+	fmt.Println("store: ", store.commands[cmd])
+	fmt.Println("store ping: ", store.commands["ping"])
 	return response.CacheResponse{Error: fmt.Sprintf("Unknown command: %s", cmd)}
 }
 

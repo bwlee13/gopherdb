@@ -53,7 +53,7 @@ func TestCacheMiss(t *testing.T) {
 		Error:   "",
 	}
 
-	result := store.Execute("get", request.NewCacheRequest("Key1", "Val1", -1))
+	result := store.Execute("get", request.NewCacheRequest("Key1", "", -1))
 	assert.Equal(t, expectedRes, result)
 }
 
