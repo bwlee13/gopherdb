@@ -1,9 +1,9 @@
 package object
 
 type CacheObject struct {
-	Key   string
-	Value interface{}
-	TTL   int64
+	Key   string      `json:"key"`
+	Value interface{} `json:"value"`
+	TTL   int64       `json:"ttl"`
 }
 
 func NewCacheObjFromValue(value interface{}) CacheObject {

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -62,6 +63,7 @@ func StartServer(service *Service) (err error) {
 				}
 			}
 
+			defer conn.Close()
 			go handleConn(conn, service)
 		}
 	}()
@@ -72,8 +74,6 @@ func StartServer(service *Service) (err error) {
 }
 
 func handleConn(conn net.Conn, service *Service) error {
-	defer conn.Close()
-
 	for {
 		buf := make([]byte, 1024)
 		n, err := conn.Read(buf)
@@ -87,25 +87,35 @@ func handleConn(conn net.Conn, service *Service) error {
 			}
 		}
 
-		fmt.Println("Length:", len(buf[:n]))
-		log.Printf("command:\n %s", buf[:n])
-		fmt.Println(len(buf[:n]))
+		defer conn.Close()
+
 		payload := buf[:n]
-		fmt.Println("Received payload:", payload)
-		message := string(payload)
+
+		message := strings.TrimSpace(string(payload))
 		fmt.Println("Received message:", message)
+		// @TODO Pass message to Parser() func
+		// @TODO Pass Parsed MSG to HandleCmd() func
+		// @TODO Return response to client fro HanldeCmd() -> {cmdName}Cmd()
+
 		// obv find a way better way than this. Maybe use handler and pass trimmed message
 		// also do switch case, not if elif...
-		if strings.TrimSpace(message) == "ping" {
+		if message == "ping" {
 			fmt.Println("PING REC")
 			res := HandleCommands("ping")
 			fmt.Println("RESULT: ", res)
-
-			if _, err := conn.Write([]byte(res.Message)); err != nil {
-				fmt.Println("Error writing to connection:", err)
-				return fmt.Errorf("error writing to connection: %s", err)
+			msg := res.Message + "\n"
+			fmt.Println("sending message: ", msg)
+			encoder := json.NewEncoder(conn)
+			err = encoder.Encode(res)
+			if err != nil {
+				fmt.Println("err: ", err)
 			}
-		} else if strings.TrimSpace(message) == "shutdown" {
+
+			// if _, err := conn.Write(res); err != nil {
+			// 	fmt.Println("Error writing to connection:", err)
+			// 	return fmt.Errorf("error writing to connection: %s", err)
+			// }
+		} else if message == "shutdown" {
 			fmt.Println("Shutdown command received, closing connection.")
 			service.quit <- true
 			return fmt.Errorf("shutdown")

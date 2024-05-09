@@ -7,13 +7,13 @@ const (
 )
 
 type CacheResponse struct {
-	CacheObj object.CacheObject
+	CacheObj object.CacheObject `json:"cacheObj"`
 	// Status of result (0: Fail, 1: Success)
-	Status int32
+	Status int32 `json:"status"`
 	// text data to be returned to client
-	Message string
+	Message string `json:"message"`
 	// Error message to be returned to client
-	Error string
+	Error string `json:"error"`
 }
 
 func NewResponseFromValue(value interface{}) CacheResponse {

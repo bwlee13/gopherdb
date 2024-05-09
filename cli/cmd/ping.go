@@ -1,12 +1,17 @@
 package cmd
 
 import (
-	"bufio"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net"
 
 	"github.com/spf13/cobra"
+
+	"github.com/bwlee13/gopherdb/storage/response"
 )
+
+var cacheResp response.CacheResponse
 
 var pingCmd = &cobra.Command{
 	Use:   "ping",
@@ -20,11 +25,21 @@ var pingCmd = &cobra.Command{
 		}
 		defer conn.Close()
 
-		conn.Write([]byte("ping"))
-		response, err := bufio.NewReader(conn).ReadString('\n')
+		conn.Write([]byte("ping\n"))
+		decoder := json.NewDecoder(conn)
+		err = decoder.Decode(&cacheResp)
+
 		if err != nil {
 			log.Fatalf("Failed to read response: %v", err)
 		}
-		log.Printf("Response from server: %s", response)
+
+		fmt.Printf("Response from server: Cache Object: {Key: '%s', Value: %v, TTL: %d}, Status: %d, Message: '%s', Error: '%s'}\n",
+			cacheResp.CacheObj.Key,
+			cacheResp.CacheObj.Value,
+			cacheResp.CacheObj.TTL,
+			cacheResp.Status,
+			cacheResp.Message,
+			cacheResp.Error)
+
 	},
 }
