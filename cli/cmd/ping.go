@@ -33,13 +33,10 @@ var pingCmd = &cobra.Command{
 			log.Fatalf("Failed to read response: %v", err)
 		}
 
-		fmt.Printf("Response from server: Cache Object: {Key: '%s', Value: %v, TTL: %d}, Status: %d, Message: '%s', Error: '%s'}\n",
-			cacheResp.CacheObj.Key,
-			cacheResp.CacheObj.Value,
-			cacheResp.CacheObj.TTL,
-			cacheResp.Status,
-			cacheResp.Message,
-			cacheResp.Error)
+		if cacheResp.Error != "" {
+			log.Fatalf("Error from server: %v", cacheResp.Error)
+		}
 
+		fmt.Printf("gopherdb:%s> %s\n", port, cacheResp.Message)
 	},
 }
