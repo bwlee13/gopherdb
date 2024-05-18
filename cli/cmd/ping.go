@@ -18,7 +18,6 @@ var pingCmd = &cobra.Command{
 	Short: "Ping test",
 	Long:  "Ping test",
 	Run: func(cmd *cobra.Command, args []string) {
-		// wonder if instead of net Dial if this should have some handlers
 		conn, err := net.Dial("tcp", "localhost:42069")
 		if err != nil {
 			log.Fatalf("Could not connect to server: %v", err)
